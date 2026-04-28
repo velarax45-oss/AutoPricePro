@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import plotly.graph_objects as go
- 
+
 # ─────────────────────────────────────────────
 #  PAGE CONFIG
 # ─────────────────────────────────────────────
@@ -12,14 +12,14 @@ st.set_page_config(
     page_icon="🚗",
     layout="wide",
 )
- 
+
 # ─────────────────────────────────────────────
 #  LUXURY CSS — Carbon Black + Amber Gold
 # ─────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
- 
+
 :root {
     --bg:         #080a0e;
     --bg-card:    #0e1118;
@@ -36,13 +36,13 @@ st.markdown("""
     --red:        #e04040;
     --blue:       #4080e0;
 }
- 
+
 html, body, [class*="css"] {
     background-color: var(--bg) !important;
     color: var(--text) !important;
     font-family: 'Exo 2', sans-serif !important;
 }
- 
+
 /* Grid background */
 .stApp {
     background:
@@ -52,12 +52,12 @@ html, body, [class*="css"] {
         var(--bg) !important;
     background-size: 48px 48px, 48px 48px, auto, auto !important;
 }
- 
+
 .block-container { padding-top: 0 !important; max-width: 1140px !important; }
 #MainMenu, footer, header { visibility: hidden !important; }
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
- 
+
 /* ── HERO ── */
 .hero {
     text-align: center;
@@ -105,7 +105,7 @@ html, body, [class*="css"] {
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
     margin: 1.3rem auto 0;
 }
- 
+
 /* ── CARDS ── */
 .g-card {
     background: var(--bg-glass);
@@ -132,7 +132,7 @@ html, body, [class*="css"] {
     background: radial-gradient(circle, var(--gold-dim), transparent 70%);
     pointer-events: none;
 }
- 
+
 .g-card-title {
     font-family: 'Rajdhani', sans-serif;
     font-size: 0.6rem;
@@ -151,7 +151,7 @@ html, body, [class*="css"] {
     height: 1px;
     background: var(--border);
 }
- 
+
 /* ── RESULT PANEL ── */
 .result-panel {
     background: linear-gradient(135deg, rgba(200,168,75,0.10), rgba(200,168,75,0.03));
@@ -202,7 +202,7 @@ html, body, [class*="css"] {
     letter-spacing: 0.08em;
 }
 .rp-range b { color: var(--gold); font-weight: 600; }
- 
+
 /* ── STAT CHIPS ── */
 .stat-row {
     display: flex;
@@ -232,7 +232,7 @@ html, body, [class*="css"] {
     font-weight: 700;
     color: var(--text);
 }
- 
+
 /* ── SECTION LABEL ── */
 .sec-label {
     font-family: 'Rajdhani', sans-serif;
@@ -252,7 +252,7 @@ html, body, [class*="css"] {
     height: 1px;
     background: var(--border);
 }
- 
+
 /* ── PLACEHOLDER ── */
 .placeholder {
     text-align: center;
@@ -271,7 +271,7 @@ html, body, [class*="css"] {
     line-height: 1.7;
 }
 .placeholder b { color: var(--gold); }
- 
+
 /* ── COMPARE RESULT ── */
 .vs-price-card {
     border-radius: 3px;
@@ -294,7 +294,7 @@ html, body, [class*="css"] {
 .vpc-a .vpc-price { color: #8ec8ff; }
 .vpc-b .vpc-price { color: #ffc88e; }
 .vpc-sub { font-size: 0.72rem; color: var(--muted); margin-top: 5px; }
- 
+
 .vs-divider {
     display: flex;
     align-items: center;
@@ -305,7 +305,7 @@ html, body, [class*="css"] {
     color: var(--muted);
     letter-spacing: 0.1em;
 }
- 
+
 .winner-strip {
     background: var(--gold-dim);
     border: 1px solid var(--border-hi);
@@ -320,7 +320,7 @@ html, body, [class*="css"] {
     text-transform: uppercase;
     margin: 0.8rem 0 1.2rem;
 }
- 
+
 /* ── INPUTS OVERRIDE ── */
 div[data-testid="stSelectbox"] label,
 div[data-testid="stNumberInput"] label,
@@ -332,7 +332,7 @@ div[data-testid="stSlider"] label {
     text-transform: uppercase !important;
     font-family: 'Exo 2', sans-serif !important;
 }
- 
+
 div[data-baseweb="select"] > div {
     background: rgba(8,10,14,0.95) !important;
     border-color: var(--border) !important;
@@ -340,14 +340,14 @@ div[data-baseweb="select"] > div {
     color: var(--text) !important;
 }
 div[data-baseweb="select"] > div:hover { border-color: var(--gold) !important; }
- 
+
 input[type="number"] {
     background: rgba(8,10,14,0.95) !important;
     border-color: var(--border) !important;
     color: var(--text) !important;
     border-radius: 3px !important;
 }
- 
+
 /* ── BUTTON ── */
 div[data-testid="stButton"] > button {
     background: linear-gradient(135deg, #c8a84b 0%, #7a5a18 100%) !important;
@@ -370,7 +370,7 @@ div[data-testid="stButton"] > button:hover {
     filter: brightness(1.1) !important;
 }
 div[data-testid="stButton"] > button:active { transform: translateY(0px) !important; }
- 
+
 /* ── TABS ── */
 div[data-testid="stTabs"] [data-baseweb="tab-list"] {
     background: transparent !important;
@@ -397,13 +397,77 @@ div[data-testid="stTabs"] [aria-selected="true"] {
     border-bottom-color: var(--gold) !important;
     background: var(--gold-dim) !important;
 }
- 
+
 /* ── DATAFRAME ── */
 div[data-testid="stDataFrame"] {
     border: 1px solid var(--border) !important;
     border-radius: 3px !important;
 }
- 
+
+/* ── OWNERSHIP COST GRID ── */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0.6rem 0 0.8rem;
+}
+.info-item {
+    background: rgba(10, 12, 18, 0.85);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 12px 14px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+.info-item:hover { border-color: var(--gold); }
+.ii-icon { font-size: 1.2rem; margin-bottom: 4px; }
+.ii-label {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+.ii-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--gold-lt);
+    line-height: 1.1;
+    margin: 3px 0 2px;
+}
+.ii-note {
+    font-size: 0.62rem;
+    color: #3a4252;
+    letter-spacing: 0.08em;
+    font-style: italic;
+}
+.total-cost-bar {
+    background: linear-gradient(90deg, rgba(200,168,75,0.12), rgba(200,168,75,0.04));
+    border: 1px solid var(--border-hi);
+    border-radius: 3px;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+.tcb-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    color: var(--gold);
+    text-transform: uppercase;
+}
+.tcb-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold-lt);
+}
+
 /* ── FOOTER ── */
 .luxury-footer {
     text-align: center;
@@ -419,7 +483,7 @@ div[data-testid="stDataFrame"] {
 .luxury-footer span { color: var(--border); }
 </style>
 """, unsafe_allow_html=True)
- 
+
 # ─────────────────────────────────────────────
 #  LOAD ARTIFACTS
 # ─────────────────────────────────────────────
@@ -429,7 +493,7 @@ def load_artifacts():
     brand_model = joblib.load("brand_model_map.pkl")
     meta        = joblib.load("meta.pkl")
     return model, brand_model, meta
- 
+
 @st.cache_data
 def load_year_ranges():
     """Build a dict of (brand, model) -> (launch_year, current_year) from the dataset."""
@@ -441,10 +505,10 @@ def load_year_ranges():
         name_col = next((c for c in df.columns if c in ("name", "car_name", "car name")), None)
         brand_col = next((c for c in df.columns if c == "brand"), None)
         model_col = next((c for c in df.columns if c == "model"), None)
- 
+
         if year_col is None:
             return {}
- 
+
         ranges = {}
         if brand_col and model_col:
             for (brand, model), grp in df.groupby([brand_col, model_col]):
@@ -459,10 +523,10 @@ def load_year_ranges():
         return ranges
     except Exception:
         return {}
- 
+
 model, brand_model_map, meta = load_artifacts()
 year_ranges = load_year_ranges()
- 
+
 fuels         = meta["fuel_types"]
 transmissions = meta["transmission_types"]
 seller_types  = meta["seller_types"]
@@ -471,7 +535,7 @@ year_min      = meta["year_min"]
 year_max      = meta["year_max"]
 km_max        = meta["km_max"]
 brands        = sorted(brand_model_map.keys())
- 
+
 def get_year_range(brand, model):
     """Return (launch_year, 2026) for this brand+model, falling back to global range."""
     key = (brand.strip(), model.strip())
@@ -483,7 +547,7 @@ def get_year_range(brand, model):
         launch = min(year_ranges[k][0] for k in brand_keys)
         return launch, 2026
     return year_min, 2026
- 
+
 # ─────────────────────────────────────────────
 #  HELPERS
 # ─────────────────────────────────────────────
@@ -500,16 +564,16 @@ def build_input(brand, mdl, year, km, fuel, transmission, seller_type, owner):
         "transmission": transmission,
         "owner":        owner,
     }])
- 
+
 def predict_price(df_row):
     return max(model.predict(df_row)[0], 0)
- 
+
 def fmt_inr(val):
     lakh = val / 1e5
     if lakh >= 100:
         return f"₹{lakh/100:.2f} Cr"
     return f"₹{lakh:.2f} L"
- 
+
 def depreciation_series(brand, mdl, base_year, km, fuel, transmission, seller_type, owner):
     years, prices = [], []
     for yr in range(base_year, 2027):
@@ -518,7 +582,7 @@ def depreciation_series(brand, mdl, base_year, km, fuel, transmission, seller_ty
         years.append(yr)
         prices.append(predict_price(row))
     return years, prices
- 
+
 PLOT_LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
@@ -526,7 +590,7 @@ PLOT_LAYOUT = dict(
     margin=dict(l=0, r=0, t=14, b=0),
     height=230,
 )
- 
+
 # ─────────────────────────────────────────────
 #  HERO HEADER
 # ─────────────────────────────────────────────
@@ -538,25 +602,25 @@ st.markdown("""
   <div class="hero-rule"></div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ─────────────────────────────────────────────
 #  TABS
 # ─────────────────────────────────────────────
 tab1, tab2 = st.tabs(["◈  SINGLE VALUATION", "⬡  COMPARE TWO CARS"])
- 
+
 # ═══════════════════════════════════════════════
 #  TAB 1 — SINGLE VALUATION
 # ═══════════════════════════════════════════════
 with tab1:
     col_form, col_result = st.columns([1, 1.25], gap="large")
- 
+
     with col_form:
         st.markdown('<div class="g-card"><div class="g-card-title">Vehicle Specification</div>', unsafe_allow_html=True)
- 
+
         sel_brand   = st.selectbox("Brand", brands, key="s_brand")
         models_list = brand_model_map.get(sel_brand, [])
         sel_model   = st.selectbox("Model", models_list, key="s_model")
- 
+
         mdl_yr_min, mdl_yr_max = get_year_range(sel_brand, sel_model)
         mdl_default = min(max(mdl_yr_max - 3, mdl_yr_min), mdl_yr_max)
         st.markdown(
@@ -565,7 +629,7 @@ with tab1:
             f'MODEL TIMELINE &nbsp;·&nbsp; {mdl_yr_min} — {mdl_yr_max}</div>',
             unsafe_allow_html=True,
         )
- 
+
         c1, c2 = st.columns(2)
         with c1:
             sel_year = st.slider(
@@ -577,22 +641,22 @@ with tab1:
             )
         with c2:
             sel_km = st.number_input("KM Driven", min_value=0, max_value=km_max, value=13000, step=1, key="s_km")
- 
+
         c3, c4 = st.columns(2)
         with c3:
             sel_fuel  = st.selectbox("Fuel Type", fuels, key="s_fuel")
         with c4:
             sel_trans = st.selectbox("Transmission", transmissions, key="s_trans")
- 
+
         c5, c6 = st.columns(2)
         with c5:
             sel_seller = st.selectbox("Seller Type", seller_types, key="s_seller")
         with c6:
             sel_owner = st.selectbox("Owner", owners, key="s_owner")
- 
+
         st.markdown("</div>", unsafe_allow_html=True)
         predict_btn = st.button("PREDICT MARKET VALUE", key="s_btn")
- 
+
     with col_result:
         if predict_btn:
             row   = build_input(sel_brand, sel_model, sel_year, sel_km,
@@ -600,7 +664,7 @@ with tab1:
             price = predict_price(row)
             low, high = price * 0.92, price * 1.08
             age = 2026 - sel_year
- 
+
             st.markdown(f"""
             <div class="result-panel">
               <div class="rp-tag">Estimated Market Value</div>
@@ -614,61 +678,100 @@ with tab1:
               <div class="stat-chip"><span class="sc-label">Trans.</span><span class="sc-val">{sel_trans[:4]}</span></div>
             </div>
             """, unsafe_allow_html=True)
- 
-            # Chart 1: Depreciation Curve
-            st.markdown('<div class="sec-label">Depreciation Curve</div>', unsafe_allow_html=True)
-            yrs, prices = depreciation_series(
-                sel_brand, sel_model, max(sel_year, 2010),
-                sel_km, sel_fuel, sel_trans, sel_seller, sel_owner
-            )
-            fig_dep = go.Figure()
-            fig_dep.add_trace(go.Scatter(
-                x=yrs, y=[p/1e5 for p in prices],
-                mode="lines+markers",
-                line=dict(color="#c8a84b", width=2.5),
-                marker=dict(size=5, color="#e5c96b", line=dict(color="#c8a84b", width=1)),
-                fill="tozeroy",
-                fillcolor="rgba(200,168,75,0.06)",
-                name="Value (₹ Lakh)",
+
+            # ── OWNERSHIP COST BREAKDOWN ──
+            st.markdown('<div class="sec-label">Ownership Cost Breakdown</div>', unsafe_allow_html=True)
+
+            insurance   = round(price * 0.035 / 1e5, 2)   # ~3.5% of value per year
+            maintenance = 18000 if sel_fuel == "Diesel" else 12000  # annual service estimate
+            fuel_cost   = round((sel_km / 15) * (106 if sel_fuel == "Petrol" else 92 if sel_fuel == "Diesel" else 75) / 1e5, 2)
+            rto_tax     = round(price * 0.02 / 1e5, 2)     # ~2% road tax / year
+            total_yearly = round(insurance + maintenance/1e5 + fuel_cost + rto_tax, 2)
+
+            st.markdown(f"""
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="ii-icon">🛡️</div>
+                <div class="ii-label">Insurance / yr</div>
+                <div class="ii-val">₹{insurance:.2f} L</div>
+                <div class="ii-note">~3.5% of market value</div>
+              </div>
+              <div class="info-item">
+                <div class="ii-icon">🔧</div>
+                <div class="ii-label">Maintenance / yr</div>
+                <div class="ii-val">₹{maintenance/1e5:.2f} L</div>
+                <div class="ii-note">{"Diesel service est." if sel_fuel == "Diesel" else "Petrol service est."}</div>
+              </div>
+              <div class="info-item">
+                <div class="ii-icon">⛽</div>
+                <div class="ii-label">Fuel Cost / yr</div>
+                <div class="ii-val">₹{fuel_cost:.2f} L</div>
+                <div class="ii-note">{sel_km:,} km @ avg mileage</div>
+              </div>
+              <div class="info-item">
+                <div class="ii-icon">📋</div>
+                <div class="ii-label">Road Tax / yr</div>
+                <div class="ii-val">₹{rto_tax:.2f} L</div>
+                <div class="ii-note">~2% of market value</div>
+              </div>
+            </div>
+            <div class="total-cost-bar">
+              <span class="tcb-label">TOTAL ESTIMATED ANNUAL COST</span>
+              <span class="tcb-val">₹{total_yearly:.2f} L / year</span>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # ── PRICE VS SIMILAR CARS ──
+            st.markdown('<div class="sec-label">Price vs Similar Cars in Market</div>', unsafe_allow_html=True)
+
+            similar_configs = [
+                ("Older · +3 yrs",   sel_year - 3, sel_km + 30000),
+                ("Older · +1 yr",    sel_year - 1, sel_km + 10000),
+                ("This Car",         sel_year,      sel_km),
+                ("Newer · -1 yr",    sel_year + 1,  max(sel_km - 10000, 0)),
+                ("Newer · -3 yrs",   sel_year + 3,  max(sel_km - 30000, 0)),
+            ]
+
+            mdl_yr_min_s, mdl_yr_max_s = get_year_range(sel_brand, sel_model)
+            sim_labels, sim_prices, sim_kms, sim_years, sim_colors = [], [], [], [], []
+            for label, yr, km_s in similar_configs:
+                yr_c  = max(min(yr, mdl_yr_max_s), mdl_yr_min_s)
+                km_c  = max(km_s, 0)
+                r     = build_input(sel_brand, sel_model, yr_c, km_c, sel_fuel, sel_trans, sel_seller, sel_owner)
+                p     = predict_price(r)
+                sim_labels.append(label)
+                sim_prices.append(round(p / 1e5, 2))
+                sim_kms.append(f"{km_c:,} km")
+                sim_years.append(yr_c)
+                sim_colors.append("#c8a84b" if label == "This Car" else "#3a4560")
+
+            fig_sim = go.Figure()
+            fig_sim.add_trace(go.Bar(
+                x=sim_labels,
+                y=sim_prices,
+                marker_color=sim_colors,
+                marker_line_color=["#e5c96b" if l == "This Car" else "#556080" for l in sim_labels],
+                marker_line_width=1.5,
+                text=[f"₹{p:.1f}L" for p in sim_prices],
+                textposition="outside",
+                textfont=dict(color="#a0a8b8", size=11, family="Rajdhani"),
+                customdata=list(zip(sim_years, sim_kms)),
+                hovertemplate="<b>%{x}</b><br>Year: %{customdata[0]}<br>KM: %{customdata[1]}<br>Price: ₹%{y:.2f} L<extra></extra>",
             ))
-            fig_dep.update_layout(
+            fig_sim.update_layout(
                 **PLOT_LAYOUT,
-                xaxis=dict(title="Year", gridcolor="rgba(200,168,75,0.07)", showgrid=True, zeroline=False),
-                yaxis=dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.07)", showgrid=True, zeroline=False),
+                height=260,
+                yaxis=dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.06)", zeroline=False),
+                xaxis=dict(gridcolor="rgba(0,0,0,0)", tickfont=dict(size=10, color="#6a7080")),
+                bargap=0.35,
             )
-            st.plotly_chart(fig_dep, use_container_width=True)
- 
-            # Chart 2: Price vs KM
-            st.markdown('<div class="sec-label">Price vs KM Driven</div>', unsafe_allow_html=True)
-            km_range  = list(range(0, km_max + 1, 10000))
-            prices_km = []
-            for km_val in km_range:
-                r = build_input(sel_brand, sel_model, sel_year, km_val,
-                                sel_fuel, sel_trans, sel_seller, sel_owner)
-                prices_km.append(predict_price(r) / 1e5)
- 
-            fig_km = go.Figure()
-            fig_km.add_trace(go.Scatter(
-                x=km_range, y=prices_km,
-                mode="lines",
-                line=dict(color="#a0a8b8", width=2),
-                fill="tozeroy",
-                fillcolor="rgba(160,168,184,0.05)",
-            ))
-            fig_km.add_vline(
-                x=sel_km,
-                line_dash="dot", line_color="#c8a84b", line_width=1.5,
-                annotation_text=f"  {sel_km:,} km",
-                annotation_font_color="#c8a84b",
-                annotation_font_size=10,
+            st.plotly_chart(fig_sim, use_container_width=True)
+            st.markdown(
+                '<div style="font-size:0.6rem;color:#404858;letter-spacing:0.12em;text-align:center;margin-top:-10px;">'
+                'Same model · same fuel · varying year & mileage</div>',
+                unsafe_allow_html=True
             )
-            fig_km.update_layout(
-                **PLOT_LAYOUT,
-                xaxis=dict(title="KM Driven", gridcolor="rgba(200,168,75,0.07)", tickformat=",", zeroline=False),
-                yaxis=dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.07)", zeroline=False),
-            )
-            st.plotly_chart(fig_km, use_container_width=True)
- 
+
         else:
             st.markdown("""
             <div class="placeholder">
@@ -677,14 +780,14 @@ with tab1:
               <b>PREDICT MARKET VALUE</b></p>
             </div>
             """, unsafe_allow_html=True)
- 
- 
+
+
 # ═══════════════════════════════════════════════
 #  TAB 2 — COMPARISON MODE
 # ═══════════════════════════════════════════════
 with tab2:
     cc1, cc2 = st.columns(2, gap="large")
- 
+
     def car_form(col, idx):
         color_label = "CAR A — BLUE" if idx == 1 else "CAR B — AMBER"
         with col:
@@ -708,23 +811,23 @@ with tab2:
             owner    = st.selectbox("Owner", owners, key=f"c{idx}_owner")
             st.markdown("</div>", unsafe_allow_html=True)
         return brand, mdl, yr, km, fuel, trans, seller, owner
- 
+
     data_a = car_form(cc1, 1)
     data_b = car_form(cc2, 2)
- 
+
     compare_btn = st.button("RUN COMPARISON ANALYSIS", key="cmp_btn")
- 
+
     if compare_btn:
         brand_a, mdl_a, yr_a, km_a, fuel_a, trans_a, seller_a, owner_a = data_a
         brand_b, mdl_b, yr_b, km_b, fuel_b, trans_b, seller_b, owner_b = data_b
- 
+
         row_a   = build_input(brand_a, mdl_a, yr_a, km_a, fuel_a, trans_a, seller_a, owner_a)
         row_b   = build_input(brand_b, mdl_b, yr_b, km_b, fuel_b, trans_b, seller_b, owner_b)
         price_a = predict_price(row_a)
         price_b = predict_price(row_b)
         winner  = f"CAR A  ({brand_a} {mdl_a})" if price_a >= price_b else f"CAR B  ({brand_b} {mdl_b})"
         diff    = abs(price_a - price_b)
- 
+
         r1, r2, r3 = st.columns([1, 0.18, 1])
         with r1:
             st.markdown(f"""
@@ -744,15 +847,15 @@ with tab2:
               <div class="vpc-sub">{yr_b} &nbsp;·&nbsp; {km_b:,} km &nbsp;·&nbsp; {fuel_b}</div>
             </div>
             """, unsafe_allow_html=True)
- 
+
         st.markdown(f"""
         <div class="winner-strip">
             ◈ &nbsp; Higher Value: &nbsp; {winner} &nbsp; · &nbsp; Difference: {fmt_inr(diff)} &nbsp; ◈
         </div>
         """, unsafe_allow_html=True)
- 
+
         ch1, ch2 = st.columns(2)
- 
+
         with ch1:
             st.markdown('<div class="sec-label">Price Comparison</div>', unsafe_allow_html=True)
             fig_bar = go.Figure(go.Bar(
@@ -772,12 +875,12 @@ with tab2:
                 xaxis=dict(gridcolor="rgba(0,0,0,0)"),
             )
             st.plotly_chart(fig_bar, use_container_width=True)
- 
+
         with ch2:
             st.markdown('<div class="sec-label">Depreciation Comparison</div>', unsafe_allow_html=True)
             yrs_a, dep_a = depreciation_series(brand_a, mdl_a, max(yr_a, 2010), km_a, fuel_a, trans_a, seller_a, owner_a)
             yrs_b, dep_b = depreciation_series(brand_b, mdl_b, max(yr_b, 2010), km_b, fuel_b, trans_b, seller_b, owner_b)
- 
+
             fig_dep2 = go.Figure()
             fig_dep2.add_trace(go.Scatter(
                 x=yrs_a, y=[p/1e5 for p in dep_a],
@@ -806,7 +909,7 @@ with tab2:
                 ),
             )
             st.plotly_chart(fig_dep2, use_container_width=True)
- 
+
         # Spec Table
         st.markdown('<div class="sec-label">Specifications</div>', unsafe_allow_html=True)
         specs_df = pd.DataFrame({
@@ -815,8 +918,8 @@ with tab2:
             f"Car B  {brand_b}": [brand_b, mdl_b, yr_b, f"{km_b:,} km", fuel_b, trans_b, seller_b, owner_b, fmt_inr(price_b)],
         })
         st.dataframe(specs_df.set_index("Specification"), use_container_width=True)
- 
-## ─────────────────────────────────────────────
+
+# ─────────────────────────────────────────────
 #  FOOTER
 # ─────────────────────────────────────────────
 st.markdown("""
