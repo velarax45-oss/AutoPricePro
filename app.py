@@ -410,7 +410,7 @@ with tab2:
         })
         st.dataframe(specs_df.set_index("Specification"), use_container_width=True)
  
-# ─────────────────────────────────────────────
+## ─────────────────────────────────────────────
 #  FOOTER
 # ─────────────────────────────────────────────
 st.markdown("""
@@ -418,3 +418,4 @@ st.markdown("""
     AutoPricePro · XGBoost · R² 95.46% · Built with Streamlit<br>
     <span style="color:#1e293b;">Predictions are estimates. Verify before transacting.</span>
 </div>
+""", unsafe_allow_html=True)
