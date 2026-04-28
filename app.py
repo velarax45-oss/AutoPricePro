@@ -680,6 +680,7 @@ with tab1:
             """, unsafe_allow_html=True)
 
             # ── OWNERSHIP COST BREAKDOWN ──
+                        # ── OWNERSHIP COST BREAKDOWN ── (FIXED)
             st.markdown('<div class="sec-label">Ownership Cost Breakdown</div>', unsafe_allow_html=True)
 
             insurance   = round(price * 0.035 / 1e5, 2)   # ~3.5% of value per year
@@ -692,48 +693,49 @@ with tab1:
             <div class="info-grid">
               <div class="info-item">
                 <div class="ii-icon">🛡️</div>
-                <div class="ii-label">Insurance / yr</div>
-                <div class="ii-val">₹{insurance:.2f} L</div>
+                <div class="ii-label">Insurance/yr</div>
+                <div class="ii-val">₹{insurance:.2f}L</div>
                 <div class="ii-note">~3.5% of market value</div>
               </div>
               <div class="info-item">
                 <div class="ii-icon">🔧</div>
-                <div class="ii-label">Maintenance / yr</div>
-                <div class="ii-val">₹{maintenance/1e5:.2f} L</div>
-                <div class="ii-note">{"Diesel service est." if sel_fuel == "Diesel" else "Petrol service est."}</div>
+                <div class="ii-label">Maintenance/yr</div>
+                <div class="ii-val">₹{maintenance/1e5:.2f}L</div>
+                <div class="ii-note">{"Diesel service" if sel_fuel == "Diesel" else "Petrol service"}</div>
               </div>
               <div class="info-item">
                 <div class="ii-icon">⛽</div>
-                <div class="ii-label">Fuel Cost / yr</div>
-                <div class="ii-val">₹{fuel_cost:.2f} L</div>
+                <div class="ii-label">Fuel Cost/yr</div>
+                <div class="ii-val">₹{fuel_cost:.2f}L</div>
                 <div class="ii-note">{sel_km:,} km @ avg mileage</div>
               </div>
               <div class="info-item">
                 <div class="ii-icon">📋</div>
-                <div class="ii-label">Road Tax / yr</div>
-                <div class="ii-val">₹{rto_tax:.2f} L</div>
+                <div class="ii-label">Road Tax/yr</div>
+                <div class="ii-val">₹{rto_tax:.2f}L</div>
                 <div class="ii-note">~2% of market value</div>
               </div>
             </div>
             <div class="total-cost-bar">
               <span class="tcb-label">TOTAL ESTIMATED ANNUAL COST</span>
-              <span class="tcb-val">₹{total_yearly:.2f} L / year</span>
+              <span class="tcb-val">₹{total_yearly:.2f}L/year</span>
             </div>
             """, unsafe_allow_html=True)
 
-            # ── PRICE VS SIMILAR CARS ──
-            st.markdown('<div class="sec-label">Price vs Similar Cars in Market</div>', unsafe_allow_html=True)
+            # ── PRICE VS SIMILAR CARS ── (PERFECT)
+            st.markdown('<div class="sec-label">Price vs Similar Cars</div>', unsafe_allow_html=True)
 
             similar_configs = [
-                ("Older · +3 yrs",   sel_year - 3, sel_km + 30000),
-                ("Older · +1 yr",    sel_year - 1, sel_km + 10000),
-                ("This Car",         sel_year,      sel_km),
-                ("Newer · -1 yr",    sel_year + 1,  max(sel_km - 10000, 0)),
-                ("Newer · -3 yrs",   sel_year + 3,  max(sel_km - 30000, 0)),
+                ("Older +3yrs",   sel_year - 3, sel_km + 30000),
+                ("Older +1yr",    sel_year - 1, sel_km + 10000),
+                ("This Car",      sel_year,      sel_km),
+                ("Newer -1yr",    sel_year + 1,  max(sel_km - 10000, 0)),
+                ("Newer -3yrs",   sel_year + 3,  max(sel_km - 30000, 0)),
             ]
 
             mdl_yr_min_s, mdl_yr_max_s = get_year_range(sel_brand, sel_model)
             sim_labels, sim_prices, sim_kms, sim_years, sim_colors = [], [], [], [], []
+            
             for label, yr, km_s in similar_configs:
                 yr_c  = max(min(yr, mdl_yr_max_s), mdl_yr_min_s)
                 km_c  = max(km_s, 0)
@@ -741,7 +743,7 @@ with tab1:
                 p     = predict_price(r)
                 sim_labels.append(label)
                 sim_prices.append(round(p / 1e5, 2))
-                sim_kms.append(f"{km_c:,} km")
+                sim_kms.append(f"{km_c:,}km")
                 sim_years.append(yr_c)
                 sim_colors.append("#c8a84b" if label == "This Car" else "#3a4560")
 
@@ -756,28 +758,23 @@ with tab1:
                 textposition="outside",
                 textfont=dict(color="#a0a8b8", size=11, family="Rajdhani"),
                 customdata=list(zip(sim_years, sim_kms)),
-                hovertemplate="<b>%{x}</b><br>Year: %{customdata[0]}<br>KM: %{customdata[1]}<br>Price: ₹%{y:.2f} L<extra></extra>",
+                hovertemplate="<b>%{x}</b><br>Year: %{customdata[0]}<br>KM: %{customdata[1]}<br>Price: ₹%{y:.2f}L<extra></extra>",
             ))
-         fig_sim.update_layout(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="#5a6070", family="Exo 2, sans-serif", size=11),
-    margin=dict(l=0, r=0, t=14, b=0),
-    height=260,
+            fig_sim.update_layout(
+                **PLOT_LAYOUT,
+                height=260,
+                yaxis=dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.06)", zeroline=False),
+                xaxis=dict(gridcolor="rgba(0,0,0,0)", tickfont=dict(size=10, color="#6a7080")),
+                bargap=0.35,
+            )
+            st.plotly_chart(fig_sim, use_container_width=True)
+            
+            st.markdown(
+                '<div style="font-size:0.6rem;color:#5a6070;letter-spacing:0.12em;text-align:center;margin-top:4px;">'
+                'Same model · same fuel · varying year & mileage</div>',
+                unsafe_allow_html=True
+            )
 
-    yaxis=dict(
-        title="₹ Lakh",
-        gridcolor="rgba(200,168,75,0.06)",
-        zeroline=False
-    ),
-
-    xaxis=dict(
-        gridcolor="rgba(0,0,0,0)",
-        tickfont=dict(size=10, color="#6a7080")
-    ),
-
-    bargap=0.35
-)
 
 # ═══════════════════════════════════════════════
 #  TAB 2 — COMPARISON MODE
