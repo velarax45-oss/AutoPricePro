@@ -758,29 +758,26 @@ with tab1:
                 customdata=list(zip(sim_years, sim_kms)),
                 hovertemplate="<b>%{x}</b><br>Year: %{customdata[0]}<br>KM: %{customdata[1]}<br>Price: ₹%{y:.2f} L<extra></extra>",
             ))
-            fig_sim.update_layout(
-                **PLOT_LAYOUT,
-                height=260,
-                yaxis=dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.06)", zeroline=False),
-                xaxis=dict(gridcolor="rgba(0,0,0,0)", tickfont=dict(size=10, color="#6a7080")),
-                bargap=0.35,
-            )
-            st.plotly_chart(fig_sim, use_container_width=True)
-            st.markdown(
-                '<div style="font-size:0.6rem;color:#404858;letter-spacing:0.12em;text-align:center;margin-top:-10px;">'
-                'Same model · same fuel · varying year & mileage</div>',
-                unsafe_allow_html=True
-            )
+         fig_sim.update_layout(
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(color="#5a6070", family="Exo 2, sans-serif", size=11),
+    margin=dict(l=0, r=0, t=14, b=0),
+    height=260,
 
-        else:
-            st.markdown("""
-            <div class="placeholder">
-              <span class="ico">◈</span>
-              <p>Configure vehicle specifications<br>and press<br>
-              <b>PREDICT MARKET VALUE</b></p>
-            </div>
-            """, unsafe_allow_html=True)
+    yaxis=dict(
+        title="₹ Lakh",
+        gridcolor="rgba(200,168,75,0.06)",
+        zeroline=False
+    ),
 
+    xaxis=dict(
+        gridcolor="rgba(0,0,0,0)",
+        tickfont=dict(size=10, color="#6a7080")
+    ),
+
+    bargap=0.35
+)
 
 # ═══════════════════════════════════════════════
 #  TAB 2 — COMPARISON MODE
