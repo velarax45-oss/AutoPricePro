@@ -162,7 +162,7 @@ with tab1:
         with c1:
             sel_year = st.slider("Year", year_min, year_max, 2018, key="s_year")
         with c2:
-            sel_km = st.slider("KM Driven", 0, km_max, 40000, step=1000, key="s_km")
+            sel_km = st.number_input("KM Driven", min_value=0, max_value=km_max, value=13000, step=1, key="s_km")
  
         c3, c4 = st.columns(2)
         with c3:
@@ -293,7 +293,7 @@ with tab2:
             mdl_list = brand_model_map.get(brand, [])
             mdl      = st.selectbox("Model", mdl_list, key=f"c{idx}_model")
             yr       = st.slider("Year", year_min, year_max, 2018 - (idx-1)*2, key=f"c{idx}_year")
-            km       = st.slider("KM Driven", 0, km_max, 30000 + (idx-1)*20000, step=1000, key=f"c{idx}_km")
+            km       = st.number_input("KM Driven", min_value=0, max_value=km_max, value=13000, step=1, key=f"c{idx}_km")
             fuel     = st.selectbox("Fuel", fuels, key=f"c{idx}_fuel")
             trans    = st.selectbox("Transmission", transmissions, key=f"c{idx}_trans")
             seller   = st.selectbox("Seller Type", seller_types, key=f"c{idx}_seller")
@@ -418,4 +418,3 @@ st.markdown("""
     AutoPricePro · XGBoost · R² 95.46% · Built with Streamlit<br>
     <span style="color:#1e293b;">Predictions are estimates. Verify before transacting.</span>
 </div>
-""", unsafe_allow_html=True)
