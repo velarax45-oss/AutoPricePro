@@ -680,115 +680,106 @@ with tab1:
             """, unsafe_allow_html=True)
 
             # ── OWNERSHIP COST BREAKDOWN ──
-             st.markdown('<div class="sec-label">Ownership Cost Breakdown</div>', unsafe_allow_html=True)
+            st.markdown('<div class="sec-label">Ownership Cost Breakdown</div>', unsafe_allow_html=True)
 
-            insurance   = round(price * 0.035 / 1e5, 2)
-            maintenance = 18000 if sel_fuel == "Diesel" else 12000
+            insurance   = round(price * 0.035 / 1e5, 2)   # ~3.5% of value per year
+            maintenance = 18000 if sel_fuel == "Diesel" else 12000  # annual service estimate
             fuel_cost   = round((sel_km / 15) * (106 if sel_fuel == "Petrol" else 92 if sel_fuel == "Diesel" else 75) / 1e5, 2)
-            rto_tax     = round(price * 0.02 / 1e5, 2)
+            rto_tax     = round(price * 0.02 / 1e5, 2)     # ~2% road tax / year
             total_yearly = round(insurance + maintenance/1e5 + fuel_cost + rto_tax, 2)
 
             st.markdown(f"""
             <div class="info-grid">
               <div class="info-item">
                 <div class="ii-icon">🛡️</div>
-                <div class="ii-label">Insurance/yr</div>
-                <div class="ii-val">₹{insurance:.2f}L</div>
-                <div class="ii-note">~3.5% of value</div>
+                <div class="ii-label">Insurance / yr</div>
+                <div class="ii-val">₹{insurance:.2f} L</div>
+                <div class="ii-note">~3.5% of market value</div>
               </div>
               <div class="info-item">
                 <div class="ii-icon">🔧</div>
-                <div class="ii-label">Maintenance/yr</div>
-                <div class="ii-val">₹{maintenance/1e5:.2f}L</div>
-                <div class="ii-note">{"Diesel" if sel_fuel == "Diesel" else "Petrol"} service</div>
+                <div class="ii-label">Maintenance / yr</div>
+                <div class="ii-val">₹{maintenance/1e5:.2f} L</div>
+                <div class="ii-note">{"Diesel service est." if sel_fuel == "Diesel" else "Petrol service est."}</div>
               </div>
               <div class="info-item">
                 <div class="ii-icon">⛽</div>
-                <div class="ii-label">Fuel/yr</div>
-                <div class="ii-val">₹{fuel_cost:.2f}L</div>
-                <div class="ii-note">{sel_km:,}km @15kmpl</div>
+                <div class="ii-label">Fuel Cost / yr</div>
+                <div class="ii-val">₹{fuel_cost:.2f} L</div>
+                <div class="ii-note">{sel_km:,} km @ avg mileage</div>
               </div>
               <div class="info-item">
                 <div class="ii-icon">📋</div>
-                <div class="ii-label">Road Tax/yr</div>
-                <div class="ii-val">₹{rto_tax:.2f}L</div>
-                <div class="ii-note">~2% of value</div>
+                <div class="ii-label">Road Tax / yr</div>
+                <div class="ii-val">₹{rto_tax:.2f} L</div>
+                <div class="ii-note">~2% of market value</div>
               </div>
             </div>
             <div class="total-cost-bar">
-              <span class="tcb-label">TOTAL ANNUAL COST</span>
-              <span class="tcb-val">₹{total_yearly:.2f}L/yr</span>
+              <span class="tcb-label">TOTAL ESTIMATED ANNUAL COST</span>
+              <span class="tcb-val">₹{total_yearly:.2f} L / year</span>
             </div>
             """, unsafe_allow_html=True)
 
-            # ── PRICE VS SIMILAR CARS ── (TYPEERROR FIXED)
-            st.markdown('<div class="sec-label">Price vs Similar Cars</div>', unsafe_allow_html=True)
+            # ── PRICE VS SIMILAR CARS ──
+            st.markdown('<div class="sec-label">Price vs Similar Cars in Market</div>', unsafe_allow_html=True)
 
             similar_configs = [
-                ("Older +3yrs", sel_year - 3, sel_km + 30000),
-                ("Older +1yr",  sel_year - 1, sel_km + 10000),
-                ("This Car",    sel_year,     sel_km),
-                ("Newer -1yr",  sel_year + 1, max(sel_km - 10000, 0)),
-                ("Newer -3yrs", sel_year + 3, max(sel_km - 30000, 0)),
+                ("Older · +3 yrs",   sel_year - 3, sel_km + 30000),
+                ("Older · +1 yr",    sel_year - 1, sel_km + 10000),
+                ("This Car",         sel_year,      sel_km),
+                ("Newer · -1 yr",    sel_year + 1,  max(sel_km - 10000, 0)),
+                ("Newer · -3 yrs",   sel_year + 3,  max(sel_km - 30000, 0)),
             ]
 
             mdl_yr_min_s, mdl_yr_max_s = get_year_range(sel_brand, sel_model)
-            sim_labels, sim_prices, sim_kms, sim_years = [], [], [], []
-
+            sim_labels, sim_prices, sim_kms, sim_years, sim_colors = [], [], [], [], []
             for label, yr, km_s in similar_configs:
-                yr_c = max(min(yr, mdl_yr_max_s), mdl_yr_min_s)
-                km_c = max(km_s, 0)
-                r = build_input(sel_brand, sel_model, yr_c, km_c, sel_fuel, sel_trans, sel_seller, sel_owner)
-                p = predict_price(r)
+                yr_c  = max(min(yr, mdl_yr_max_s), mdl_yr_min_s)
+                km_c  = max(km_s, 0)
+                r     = build_input(sel_brand, sel_model, yr_c, km_c, sel_fuel, sel_trans, sel_seller, sel_owner)
+                p     = predict_price(r)
                 sim_labels.append(label)
                 sim_prices.append(round(p / 1e5, 2))
-                sim_kms.append(f"{km_c:,}km")
+                sim_kms.append(f"{km_c:,} km")
                 sim_years.append(yr_c)
+                sim_colors.append("#c8a84b" if label == "This Car" else "#3a4560")
 
-            # ✅ FIXED: Inline PLOT_LAYOUT (no scope issues)
             fig_sim = go.Figure()
             fig_sim.add_trace(go.Bar(
                 x=sim_labels,
                 y=sim_prices,
-                marker_color=["#c8a84b" if label == "This Car" else "#3a4560" for label in sim_labels],
-                marker_line_color="#e5c96b",
+                marker_color=sim_colors,
+                marker_line_color=["#e5c96b" if l == "This Car" else "#556080" for l in sim_labels],
                 marker_line_width=1.5,
                 text=[f"₹{p:.1f}L" for p in sim_prices],
                 textposition="outside",
                 textfont=dict(color="#a0a8b8", size=11, family="Rajdhani"),
-                hovertemplate="<b>%{x}</b><br>Year: %{customdata[0]}<br>KM: %{customdata[1]}<br>₹%{y:.1f}L<extra></extra>",
-                customdata=list(zip(sim_years, sim_kms))
+                customdata=list(zip(sim_years, sim_kms)),
+                hovertemplate="<b>%{x}</b><br>Year: %{customdata[0]}<br>KM: %{customdata[1]}<br>Price: ₹%{y:.2f} L<extra></extra>",
             ))
-
-            # ✅ FIXED: Direct layout (no PLOT_LAYOUT dependency)
             fig_sim.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="#5a6070", family="Exo 2, sans-serif", size=11),
-                margin=dict(l=40, r=20, t=20, b=40),
+                **PLOT_LAYOUT,
                 height=260,
-                yaxis=dict(
-                    title="₹ Lakh", 
-                    gridcolor="rgba(200,168,75,0.06)", 
-                    zeroline=False,
-                    titlefont=dict(size=12, color="#a0a8b8")
-                ),
-                xaxis=dict(
-                    gridcolor="rgba(0,0,0,0)", 
-                    tickfont=dict(size=10, color="#6a7080"),
-                    showline=True,
-                    linecolor="rgba(200,168,75,0.2)"
-                ),
+                yaxis=dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.06)", zeroline=False),
+                xaxis=dict(gridcolor="rgba(0,0,0,0)", tickfont=dict(size=10, color="#6a7080")),
                 bargap=0.35,
-                showlegend=False
             )
-            
             st.plotly_chart(fig_sim, use_container_width=True)
             st.markdown(
-                '<div style="font-size:0.6rem;color:#5a6070;letter-spacing:0.12em;text-align:center;margin-top:4px;">'
+                '<div style="font-size:0.6rem;color:#404858;letter-spacing:0.12em;text-align:center;margin-top:-10px;">'
                 'Same model · same fuel · varying year & mileage</div>',
                 unsafe_allow_html=True
             )
+
+        else:
+            st.markdown("""
+            <div class="placeholder">
+              <span class="ico">◈</span>
+              <p>Configure vehicle specifications<br>and press<br>
+              <b>PREDICT MARKET VALUE</b></p>
+            </div>
+            """, unsafe_allow_html=True)
 
 
 # ═══════════════════════════════════════════════
