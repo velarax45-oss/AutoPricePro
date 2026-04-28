@@ -816,7 +816,7 @@ with tab2:
         })
         st.dataframe(specs_df.set_index("Specification"), use_container_width=True)
  
-# ─────────────────────────────────────────────
+## ─────────────────────────────────────────────
 #  FOOTER
 # ─────────────────────────────────────────────
 st.markdown("""
@@ -825,3 +825,4 @@ st.markdown("""
     &nbsp;<span>|</span>&nbsp;
     Predictions are estimates — verify before transacting
 </div>
+""", unsafe_allow_html=True)
