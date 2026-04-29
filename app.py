@@ -307,12 +307,12 @@ with tab1:
                 customdata=list(zip(sim_years, sim_kms)),
                 hovertemplate="<b>%{x}</b><br>Year: %{customdata[0]}<br>KM: %{customdata[1]}<br>Price: ₹%{y:.2f} L<extra></extra>",
             ))
-            fig_sim.update_layout(
-                **PLOT_LAYOUT, height=260,
-                yaxis=dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.06)", zeroline=False),
-                xaxis=dict(gridcolor="rgba(0,0,0,0)", tickfont=dict(size=10, color="#6a7080")),
-                bargap=0.35,
-            )
+            sim_layout = dict(PLOT_LAYOUT)
+            sim_layout["height"] = 260
+            sim_layout["yaxis"] = dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.06)", zeroline=False)
+            sim_layout["xaxis"] = dict(gridcolor="rgba(0,0,0,0)", tickfont=dict(size=10, color="#6a7080"))
+            sim_layout["bargap"] = 0.35
+            fig_sim.update_layout(**sim_layout)
             st.plotly_chart(fig_sim, use_container_width=True)
             st.markdown(
                 '<div style="font-size:0.6rem;color:#404858;letter-spacing:0.12em;text-align:center;margin-top:-10px;">'
@@ -408,9 +408,7 @@ with tab2:
                 textfont=dict(color="#c8a84b", size=12, family="Rajdhani"),
             ))
             fig_bar.update_layout(
-                **PLOT_LAYOUT, height=280,
-                yaxis=dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.07)", zeroline=False),
-                xaxis=dict(gridcolor="rgba(0,0,0,0)"),
+                **dict(PLOT_LAYOUT, height=280, yaxis=dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.07)", zeroline=False), xaxis=dict(gridcolor="rgba(0,0,0,0)")),
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
@@ -428,12 +426,12 @@ with tab2:
                 x=yrs_b, y=[p/1e5 for p in dep_b], name=f"{brand_b} {mdl_b}",
                 line=dict(color="#e08040", width=2.5), mode="lines+markers", marker=dict(size=4),
             ))
-            fig_dep2.update_layout(
-                **PLOT_LAYOUT, height=280,
-                xaxis=dict(title="Year", gridcolor="rgba(200,168,75,0.07)", zeroline=False),
-                yaxis=dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.07)", zeroline=False),
-                legend=dict(bgcolor="rgba(8,10,14,0.8)", bordercolor="rgba(200,168,75,0.2)", borderwidth=1, font=dict(color="#a0a8b8", size=10)),
-            )
+            dep_layout = dict(PLOT_LAYOUT)
+            dep_layout["height"] = 280
+            dep_layout["xaxis"] = dict(title="Year", gridcolor="rgba(200,168,75,0.07)", zeroline=False)
+            dep_layout["yaxis"] = dict(title="₹ Lakh", gridcolor="rgba(200,168,75,0.07)", zeroline=False)
+            dep_layout["legend"] = dict(bgcolor="rgba(8,10,14,0.8)", bordercolor="rgba(200,168,75,0.2)", borderwidth=1, font=dict(color="#a0a8b8", size=10))
+            fig_dep2.update_layout(**dep_layout)
             st.plotly_chart(fig_dep2, use_container_width=True)
 
         st.markdown('<div class="sec-label">Specifications</div>', unsafe_allow_html=True)
