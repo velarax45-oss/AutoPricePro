@@ -6,6 +6,406 @@ import plotly.graph_objects as go
 
 st.set_page_config(page_title="AutoPricePro", page_icon="🚗", layout="wide")
 
+# ─────────────────────────────────────────────
+#  AUTH CONFIG  — change credentials here
+# ─────────────────────────────────────────────
+USERS = {
+    "admin":   "autoprice2024",
+    "demo":    "demo123",
+}
+
+# ─────────────────────────────────────────────
+#  SESSION STATE INIT
+# ─────────────────────────────────────────────
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "login_error" not in st.session_state:
+    st.session_state.login_error = ""
+if "login_attempt" not in st.session_state:
+    st.session_state.login_attempt = 0
+
+# ─────────────────────────────────────────────
+#  LOGIN PAGE
+# ─────────────────────────────────────────────
+def show_login():
+    st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:ital,wght@0,200;0,300;0,400;1,200&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html, body, [class*="css"], .stApp {
+    background: #05070b !important;
+    color: #edeae4 !important;
+    font-family: 'Exo 2', sans-serif !important;
+}
+
+#MainMenu, footer, header, [data-testid="stToolbar"] { visibility: hidden !important; }
+.block-container { padding: 0 !important; max-width: 100% !important; }
+section[data-testid="stSidebar"] { display: none !important; }
+
+/* Full screen canvas */
+.login-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(ellipse 60% 50% at 50% 0%,   rgba(200,168,75,0.09) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 80% 100%, rgba(200,168,75,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 40% at 10% 60%,  rgba(200,168,75,0.04) 0%, transparent 60%),
+        #05070b;
+}
+
+/* Animated grid lines */
+.login-canvas::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(200,168,75,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,168,75,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridShift 20s linear infinite;
+}
+
+@keyframes gridShift {
+    0%   { transform: translate(0,0); }
+    100% { transform: translate(60px, 60px); }
+}
+
+/* Diagonal accent lines */
+.login-canvas::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        -55deg,
+        transparent,
+        transparent 120px,
+        rgba(200,168,75,0.018) 120px,
+        rgba(200,168,75,0.018) 121px
+    );
+}
+
+/* Centered wrapper */
+.login-wrap {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* The card */
+.login-card {
+    width: 100%;
+    max-width: 440px;
+    background: rgba(10, 13, 20, 0.85);
+    border: 1px solid rgba(200,168,75,0.25);
+    border-radius: 4px;
+    padding: 3rem 2.8rem 2.6rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow:
+        0 0 0 1px rgba(200,168,75,0.06),
+        0 40px 80px rgba(0,0,0,0.6),
+        0 0 60px rgba(200,168,75,0.04);
+    position: relative;
+    overflow: hidden;
+    animation: cardIn 0.7s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes cardIn {
+    from { opacity:0; transform: translateY(28px) scale(0.97); }
+    to   { opacity:1; transform: translateY(0)    scale(1); }
+}
+
+/* Gold top line on card */
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #c8a84b 30%, #f7e8b0 55%, #c8a84b 75%, transparent 100%);
+}
+
+/* Corner ornament */
+.login-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(200,168,75,0.07), transparent 65%);
+    pointer-events: none;
+}
+
+/* Logo area */
+.lc-logo {
+    text-align: center;
+    margin-bottom: 2.4rem;
+    animation: fadeUp 0.6s 0.15s both;
+}
+
+@keyframes fadeUp {
+    from { opacity:0; transform: translateY(12px); }
+    to   { opacity:1; transform: translateY(0); }
+}
+
+.lc-logo-icon {
+    font-size: 2.4rem;
+    display: block;
+    margin-bottom: 0.6rem;
+    filter: drop-shadow(0 0 12px rgba(200,168,75,0.5));
+}
+
+.lc-logo-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    background: linear-gradient(160deg, #f7e8b0 0%, #c8a84b 45%, #9a7230 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.lc-logo-sub {
+    font-size: 0.6rem;
+    letter-spacing: 0.38em;
+    color: rgba(200,168,75,0.45);
+    text-transform: uppercase;
+    margin-top: 0.35rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 500;
+}
+
+/* Divider */
+.lc-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.8rem;
+    animation: fadeUp 0.6s 0.2s both;
+}
+.lc-divider::before, .lc-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(200,168,75,0.18);
+}
+.lc-divider span {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    color: rgba(200,168,75,0.4);
+    text-transform: uppercase;
+}
+
+/* Field labels */
+.lc-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: rgba(160,168,184,0.7);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.4rem;
+    margin-top: 1.1rem;
+}
+
+/* Error msg */
+.lc-error {
+    background: rgba(224,64,64,0.08);
+    border: 1px solid rgba(224,64,64,0.3);
+    border-radius: 3px;
+    padding: 0.7rem 1rem;
+    font-size: 0.72rem;
+    color: #f08080;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: shake 0.35s ease;
+}
+@keyframes shake {
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-6px)}
+    75%{transform:translateX(6px)}
+}
+
+/* Streamlit input overrides — login page specific */
+div[data-testid="stTextInput"] input {
+    background: rgba(5,7,11,0.9) !important;
+    border: 1px solid rgba(200,168,75,0.22) !important;
+    border-radius: 3px !important;
+    color: #edeae4 !important;
+    font-family: 'Exo 2', sans-serif !important;
+    font-size: 0.88rem !important;
+    padding: 0.65rem 0.9rem !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+    letter-spacing: 0.06em !important;
+}
+div[data-testid="stTextInput"] input:focus {
+    border-color: rgba(200,168,75,0.6) !important;
+    box-shadow: 0 0 0 3px rgba(200,168,75,0.06), 0 0 16px rgba(200,168,75,0.08) !important;
+    outline: none !important;
+}
+div[data-testid="stTextInput"] label {
+    font-family: 'Rajdhani', sans-serif !important;
+    font-size: 0.58rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3em !important;
+    color: rgba(160,168,184,0.7) !important;
+    text-transform: uppercase !important;
+}
+
+/* Login button */
+div[data-testid="stButton"] > button {
+    background: linear-gradient(135deg, #c8a84b 0%, #8a6420 50%, #c8a84b 100%) !important;
+    background-size: 200% auto !important;
+    color: #05070b !important;
+    border: none !important;
+    border-radius: 2px !important;
+    font-family: 'Rajdhani', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 0.4em !important;
+    text-transform: uppercase !important;
+    padding: 0.75rem 0 !important;
+    width: 100% !important;
+    margin-top: 1.6rem !important;
+    clip-path: polygon(14px 0%, 100% 0%, calc(100% - 14px) 100%, 0% 100%) !important;
+    transition: background-position 0.4s ease, transform 0.15s ease, box-shadow 0.15s ease !important;
+    animation: fadeUp 0.6s 0.35s both !important;
+}
+div[data-testid="stButton"] > button:hover {
+    background-position: right center !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 32px rgba(200,168,75,0.35) !important;
+}
+div[data-testid="stButton"] > button:active {
+    transform: translateY(0) !important;
+}
+
+/* Footer hint */
+.lc-hint {
+    text-align: center;
+    margin-top: 1.6rem;
+    font-size: 0.6rem;
+    color: rgba(90,96,112,0.7);
+    letter-spacing: 0.15em;
+    font-family: 'Rajdhani', sans-serif;
+    animation: fadeUp 0.6s 0.4s both;
+}
+.lc-hint b { color: rgba(200,168,75,0.5); }
+
+/* Floating particles */
+.particle {
+    position: fixed;
+    width: 2px;
+    height: 2px;
+    background: rgba(200,168,75,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 5;
+}
+</style>
+
+<div class="login-canvas"></div>
+
+<script>
+// Floating particles
+(function() {
+    const N = 18;
+    for (let i = 0; i < N; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const dur = 8 + Math.random() * 14;
+        const del = Math.random() * 8;
+        p.style.cssText = `left:${x}vw;top:${y}vh;animation:float${i%3} ${dur}s ${del}s infinite ease-in-out;opacity:${0.2+Math.random()*0.5};width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;`;
+        document.body.appendChild(p);
+    }
+})();
+</script>
+""", unsafe_allow_html=True)
+
+    # Center the form using columns
+    _, mid, _ = st.columns([1, 1.1, 1])
+
+    with mid:
+        st.markdown("""
+        <div style="text-align:center;padding:2.5rem 0 0.5rem;">
+          <span style="font-size:2.4rem;filter:drop-shadow(0 0 12px rgba(200,168,75,0.5));">◈</span>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:1.85rem;font-weight:700;letter-spacing:0.18em;
+               background:linear-gradient(160deg,#f7e8b0 0%,#c8a84b 45%,#9a7230 100%);
+               -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-top:0.4rem;">
+            AUTOPRICEPRO
+          </div>
+          <div style="font-size:0.58rem;letter-spacing:0.38em;color:rgba(200,168,75,0.45);
+               text-transform:uppercase;margin-top:0.35rem;font-family:'Rajdhani',sans-serif;font-weight:500;">
+            AI Valuation Engine
+          </div>
+          <div style="width:60px;height:1px;background:linear-gradient(90deg,transparent,#c8a84b,transparent);margin:1.2rem auto 1.8rem;"></div>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:0.58rem;font-weight:700;
+               letter-spacing:0.32em;color:rgba(200,168,75,0.4);text-transform:uppercase;margin-bottom:1.2rem;">
+            — &nbsp; Secure Access &nbsp; —
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.session_state.login_error:
+            st.markdown(f"""
+            <div class="lc-error">
+              <span>⚠</span> {st.session_state.login_error}
+            </div>
+            """, unsafe_allow_html=True)
+
+        username = st.text_input("Username", placeholder="Enter your username", key="login_user")
+        password = st.text_input("Password", placeholder="••••••••••••", type="password", key="login_pass")
+
+        if st.button("ACCESS PLATFORM", key="login_btn"):
+            if username in USERS and USERS[username] == password:
+                st.session_state.authenticated = True
+                st.session_state.login_error = ""
+                st.rerun()
+            else:
+                st.session_state.login_attempt += 1
+                st.session_state.login_error = "Invalid credentials. Please try again."
+                st.rerun()
+
+        st.markdown("""
+        <div class="lc-hint">
+          Protected system &nbsp;·&nbsp; Authorised access only<br>
+          <b>Demo:</b> username <b>demo</b> · password <b>demo123</b>
+        </div>
+        """, unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────
+#  GATE — show login or app
+# ─────────────────────────────────────────────
+if not st.session_state.authenticated:
+    show_login()
+    st.stop()
+
+
+
+# ── LOGOUT BUTTON (top-right) ──
+with st.container():
+    lcol1, lcol2 = st.columns([8, 1])
+    with lcol2:
+        if st.button("LOGOUT", key="logout_btn"):
+            st.session_state.authenticated = False
+            st.rerun()
+
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
