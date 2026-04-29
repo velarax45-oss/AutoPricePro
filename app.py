@@ -23,386 +23,238 @@ if "login_error" not in st.session_state:
     st.session_state.login_error = ""
 
 # ─────────────────────────────────────────────
-#  CUTE LAMP LOGIN PAGE
+#  CUTE LAMP LOGIN PAGE (NEW DESIGN)
 # ─────────────────────────────────────────────
 def show_login():
     st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap');
 
 html, body, [class*="css"], .stApp {
-    background: linear-gradient(135deg, #fde8f0 0%, #fff8e7 40%, #ffecd2 100%) !important;
-    font-family: 'Nunito', sans-serif !important;
-    color: #4a3728 !important;
+    background: linear-gradient(135deg, #0b0f14 0%, #1a1f2e 50%, #16213e 100%) !important;
+    font-family: 'Poppins', sans-serif !important;
+    color: #ffffff !important;
 }
 
 #MainMenu, footer, header, [data-testid="stToolbar"] { visibility: hidden !important; }
 .block-container { padding: 0 !important; max-width: 100% !important; }
 section[data-testid="stSidebar"] { display: none !important; }
 
-/* Floating blobs background */
-.blob1 {
-    position: fixed; top: -80px; left: -80px;
-    width: 320px; height: 320px; border-radius: 50%;
-    background: rgba(255,182,193,0.25);
-    animation: blob 9s ease-in-out infinite;
-    pointer-events: none; z-index: 0;
-}
-.blob2 {
-    position: fixed; bottom: -60px; right: -60px;
-    width: 280px; height: 280px; border-radius: 50%;
-    background: rgba(255,222,130,0.28);
-    animation: blob 12s ease-in-out infinite reverse;
-    pointer-events: none; z-index: 0;
-}
-.blob3 {
-    position: fixed; top: 50%; right: -40px;
-    width: 200px; height: 200px; border-radius: 50%;
-    background: rgba(255,200,170,0.22);
-    animation: blob 7s ease-in-out infinite 3s;
-    pointer-events: none; z-index: 0;
-}
-@keyframes blob {
-    0%,100% { transform: scale(1) translate(0,0); }
-    33%      { transform: scale(1.06) translate(10px,-12px); }
-    66%      { transform: scale(0.94) translate(-8px,10px); }
+/* Lamp ambient glow */
+.lamp-ambient-glow {
+    position: fixed; width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(42, 44, 48, 0.15) 0%, transparent 70%);
+    top: 50%; left: 20%; transform: translate(-50%, -50%);
+    z-index: 1; transition: background 0.6s ease; pointer-events: none;
 }
 
-/* Sparkles */
-.sparkle {
-    position: fixed;
-    width: 6px; height: 6px;
-    background: #f9c74f;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 1;
-    animation: twinkle 3s ease-in-out infinite;
+/* Main container */
+.container {
+    display: flex; width: 100%; max-width: 1100px; height: 100vh;
+    padding: 2rem; gap: 2rem; margin: 0 auto; align-items: center;
 }
-@keyframes twinkle {
-    0%,100% { opacity:0; transform: scale(0.5); }
-    50%      { opacity:1; transform: scale(1); }
+
+/* Lamp section */
+.lamp-section {
+    flex: 1; display: flex; justify-content: center; align-items: center;
+    position: relative;
+}
+
+.lamp-svg {
+    width: 100%; max-width: 350px; height: auto; overflow: visible;
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
 }
 
 /* Login card */
-.lamp-card {
-    position: relative;
-    z-index: 10;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    background: rgba(255,255,255,0.82);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 28px;
-    overflow: hidden;
-    box-shadow:
-        0 8px 40px rgba(255,160,100,0.18),
-        0 2px 12px rgba(0,0,0,0.06),
-        inset 0 1px 0 rgba(255,255,255,0.9);
-    max-width: 820px;
-    width: 100%;
-    min-height: 480px;
-    animation: cardPop 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
-}
-@keyframes cardPop {
-    from { opacity:0; transform: scale(0.88) translateY(20px); }
-    to   { opacity:1; transform: scale(1)    translateY(0); }
+.login-card {
+    flex: 1; width: 100%; max-width: 400px;
+    background: rgba(18, 24, 32, 0.6); backdrop-filter: blur(12px);
+    padding: 3rem 2.5rem; border-radius: 20px; border: 2px solid #2a2c30;
+    box-shadow: 0 0 30px rgba(42, 44, 48, 0.15), inset 0 0 15px rgba(255, 255, 255, 0.02);
+    transition: all 0.6s ease;
 }
 
-/* Left panel — lamp side */
-.lamp-panel {
-    background: linear-gradient(170deg, #fff3cd 0%, #ffe8a0 50%, #ffd166 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2.5rem 2rem;
-    position: relative;
-    overflow: hidden;
-}
-.lamp-panel::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(ellipse 70% 60% at 50% 35%, rgba(255,255,200,0.6), transparent 70%);
-    pointer-events: none;
+.login-card.success {
+    border-color: #22c55e !important;
+    box-shadow: 0 0 40px rgba(34, 197, 94, 0.4) !important;
 }
 
-/* Lamp SVG scene */
-.lamp-scene {
-    position: relative;
-    z-index: 2;
-    animation: lampFloat 4s ease-in-out infinite;
-}
-@keyframes lampFloat {
-    0%,100% { transform: translateY(0); }
-    50%      { transform: translateY(-8px); }
+.login-card.error {
+    border-color: #ef4444 !important;
+    animation: shake 0.5s ease-in-out !important;
 }
 
-/* Glow ring under lamp */
-.lamp-glow {
-    width: 120px; height: 24px;
-    background: radial-gradient(ellipse, rgba(255,200,60,0.55), transparent 70%);
-    border-radius: 50%;
-    margin: -4px auto 0;
-    animation: glowPulse 2.5s ease-in-out infinite;
-}
-@keyframes glowPulse {
-    0%,100% { opacity:0.6; transform: scaleX(1); }
-    50%      { opacity:1;   transform: scaleX(1.12); }
+.login-card h2 { 
+    font-size: 2rem; font-weight: 600; text-align: center; margin-bottom: 2rem;
+    opacity: 1; transition: opacity 0.3s ease;
 }
 
-.lamp-tagline {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #a0742a;
-    text-align: center;
-    margin-top: 1.6rem;
-    letter-spacing: 0.06em;
-    z-index: 2;
-    position: relative;
+.success-message {
+    display: none; text-align: center; color: #22c55e;
+    font-size: 1.2rem; font-weight: 600; margin: 2rem 0;
 }
 
-/* Right panel — form side */
-.form-panel {
-    padding: 2.8rem 2.6rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.login-card.success .success-message { display: block; animation: fadeIn 0.5s ease; }
+
+.input-group { 
+    margin-bottom: 1.5rem; display: flex; flex-direction: column; 
+    opacity: 1; transition: opacity 0.3s ease;
 }
 
-.form-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: 1.9rem;
-    font-weight: 800;
-    color: #3d2b1f;
-    line-height: 1.1;
-    margin-bottom: 0.35rem;
-}
-.form-sub {
-    font-size: 0.88rem;
-    color: #9b7b6a;
-    margin-bottom: 2rem;
-    font-weight: 500;
+.login-card.success .input-group { opacity: 0; }
+
+.input-group label { 
+    font-size: 0.85rem; color: #a0a0a0; margin-bottom: 0.5rem; font-weight: 500; 
 }
 
-/* Error state */
-.form-error {
-    background: rgba(255,80,80,0.08);
-    border: 1.5px solid rgba(255,80,80,0.25);
-    border-radius: 14px;
-    padding: 0.65rem 1rem;
-    font-size: 0.8rem;
-    color: #d95353;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    animation: shake 0.35s ease;
+.input-group input {
+    background: #151a21; border: 1px solid #2a2c30; padding: 1rem 1.2rem;
+    border-radius: 10px; color: #fff; outline: none; transition: all 0.3s ease;
+    font-size: 1rem;
 }
+
+.input-group input:focus {
+    border-color: #2a2c30; box-shadow: 0 0 10px rgba(42, 44, 48, 0.3);
+}
+
+.login-btn {
+    width: 100%; padding: 1rem; border: none; border-radius: 10px;
+    background: #2a2c30; color: #888; font-size: 1rem; font-weight: 600;
+    cursor: pointer; margin-top: 1rem; transition: all 0.4s ease;
+}
+
+.login-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
 @keyframes shake {
-    0%,100%{transform:translateX(0)}
-    20%{transform:translateX(-5px)}
-    60%{transform:translateX(5px)}
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
 }
 
-/* Streamlit input overrides */
-div[data-testid="stTextInput"] label {
-    font-family: 'Nunito', sans-serif !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.08em !important;
-    color: #9b7b6a !important;
-    text-transform: uppercase !important;
-    margin-bottom: 2px !important;
-}
-div[data-testid="stTextInput"] input {
-    background: rgba(255,248,235,0.9) !important;
-    border: 2px solid rgba(255,180,80,0.3) !important;
-    border-radius: 14px !important;
-    color: #3d2b1f !important;
-    font-family: 'Nunito', sans-serif !important;
-    font-size: 0.92rem !important;
-    font-weight: 600 !important;
-    padding: 0.7rem 1rem !important;
-    transition: border-color 0.2s, box-shadow 0.2s !important;
-}
-div[data-testid="stTextInput"] input:focus {
-    border-color: #f9a825 !important;
-    box-shadow: 0 0 0 4px rgba(249,168,37,0.12) !important;
-    outline: none !important;
-}
-div[data-testid="stTextInput"] input::placeholder {
-    color: #c4a882 !important;
-    font-weight: 500 !important;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Login button */
-div[data-testid="stButton"] > button {
-    background: linear-gradient(135deg, #f9a825 0%, #fb8c00 100%) !important;
-    color: #fff !important;
-    border: none !important;
-    border-radius: 16px !important;
-    font-family: 'Nunito', sans-serif !important;
-    font-weight: 800 !important;
-    font-size: 0.92rem !important;
-    letter-spacing: 0.08em !important;
-    padding: 0.8rem 0 !important;
-    width: 100% !important;
-    margin-top: 1.4rem !important;
-    box-shadow: 0 4px 18px rgba(249,168,37,0.4) !important;
-    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-}
-div[data-testid="stButton"] > button:hover {
-    transform: translateY(-2px) scale(1.01) !important;
-    box-shadow: 0 8px 28px rgba(249,168,37,0.5) !important;
-}
-div[data-testid="stButton"] > button:active {
-    transform: translateY(0) scale(0.99) !important;
-}
-
-.signup-hint {
-    text-align: center;
-    margin-top: 1.4rem;
-    font-size: 0.82rem;
-    color: #9b7b6a;
-    font-weight: 600;
-}
-.signup-hint span {
-    color: #e07b00;
-    font-weight: 800;
-    cursor: pointer;
+@media (max-width: 768px) {
+    .container { flex-direction: column; height: auto; padding: 1rem; }
+    .lamp-svg { max-width: 250px; }
 }
 </style>
+    """, unsafe_allow_html=True)
 
-<div class="blob1"></div>
-<div class="blob2"></div>
-<div class="blob3"></div>
+    # Lamp animation states
+    lamp_states = [
+        {"themeGlowRGB": "42, 44, 48", "lightOpacity": "0", "btnBg": "#2a2c30", "btnText": "#888"},
+        {"themeGlowRGB": "34, 197, 94", "lightOpacity": "0.15", "btnBg": "#22c55e", "btnText": "#fff"},
+        {"themeGlowRGB": "249, 115, 22", "lightOpacity": "0.15", "btnBg": "#f97316", "btnText": "#fff"}
+    ]
+    
+    current_state = st.session_state.get("lamp_state", 0)
 
-<script>
-(function(){
-    const positions = [
-        {top:'12%',left:'22%',delay:'0s'},
-        {top:'18%',left:'68%',delay:'1.2s'},
-        {top:'55%',left:'12%',delay:'0.6s'},
-        {top:'72%',left:'55%',delay:'2s'},
-        {top:'35%',left:'82%',delay:'0.3s'},
-        {top:'85%',left:'30%',delay:'1.6s'},
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        st.markdown("""
+        <div class="lamp-section">
+            <div class="lamp-ambient-glow"></div>
+            <svg class="lamp-svg" viewBox="0 0 300 450" xmlns="http://www.w3.org/2000/svg" onclick="document.dispatchEvent(new CustomEvent('toggleLamp'))">
+                <defs>
+                    <linearGradient id="lightConeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
+                        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+                    </linearGradient>
+                </defs>
+                <polygon points="90,180 210,180 320,450 -20,450" fill="url(#lightConeGrad)" style="opacity: 0; transition: opacity 0.6s ease;" />
+                <ellipse cx="150" cy="400" rx="60" ry="15" fill="#151515" />
+                <ellipse cx="150" cy="395" rx="60" ry="15" fill="#3a3c40" />
+                <rect x="140" y="180" width="20" height="220" fill="#2a2c30" />
+                <rect x="142" y="180" width="8" height="220" fill="#4a4c50" /> 
+                <ellipse cx="150" cy="175" rx="90" ry="20" fill="#1a1a1a" style="transition: fill 0.6s ease;" />
+                <g style="cursor: pointer; transform-origin: top; transition: transform 0.2s;">
+                    <line x1="105" y1="180" x2="105" y2="280" stroke="#555" stroke-width="3" />
+                    <line x1="105" y1="280" x2="105" y2="310" stroke="#888" stroke-width="6" stroke-linecap="round" />
+                </g>
+                <path d="M 95 60 Q 150 45 205 60 L 240 175 Q 150 195 60 175 Z" fill="#2c2c2c" style="transition: fill 0.6s ease;" />
+                <g style="opacity: 1; transition: opacity 0.3s ease;">
+                    <path d="M 115 130 Q 125 140 135 130" stroke="#111" stroke-width="4" fill="none" stroke-linecap="round" />
+                    <path d="M 165 130 Q 175 140 185 130" stroke="#111" stroke-width="4" fill="none" stroke-linecap="round" />
+                </g>
+            </svg>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown(f"""
+        <div class="login-card" id="loginCard">
+            <h2>Welcome Back</h2>
+            <div class="success-message" id="successMessage">
+                🎉 Login Successful!<br>
+                <span style="font-size: 0.9rem; opacity: 0.8;">Loading AutoPricePro...</span>
+            </div>
+            <form onsubmit="event.preventDefault();">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" value="{st.session_state.get('username_input', '')}">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">Login</button>
+            </form>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Demo credentials hint
+        st.markdown("""
+        <div style="text-align: center; margin-top: 1.5rem; color: #777; font-size: 0.85rem;">
+            Demo: <strong style="color: #22c55e;">demo</strong> / <strong style="color: #22c55e;">demo123</strong>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # JavaScript for login functionality
+    st.markdown("""
+    <script>
+    let currentLampState = """ + str(current_state) + """;
+    const lampStates = [
+        {themeGlowRGB: "42, 44, 48", lightOpacity: "0", shadeColor: "#2c2c2c", bulbColor: "#1a1a1a", btnBg: "#2a2c30", btnText: "#888"},
+        {themeGlowRGB: "34, 197, 94", lightOpacity: "0.15", shadeColor: "#6c8c73", bulbColor: "#e6ffe6", btnBg: "#22c55e", btnText: "#fff"},
+        {themeGlowRGB: "249, 115, 22", lightOpacity: "0.15", shadeColor: "#947463", bulbColor: "#fff0e6", btnBg: "#f97316", btnText: "#fff"}
     ];
-    positions.forEach(pos => {
-        const s = document.createElement('div');
-        s.className = 'sparkle';
-        s.style.top = pos.top;
-        s.style.left = pos.left;
-        s.style.animationDelay = pos.delay;
-        document.body.appendChild(s);
+
+    // Lamp toggle
+    document.addEventListener('toggleLamp', function() {
+        currentLampState = (currentLampState + 1) % lampStates.length;
+        const state = lampStates[currentLampState];
+        document.documentElement.style.setProperty('--theme-glow-rgb', state.themeGlowRGB);
+        document.documentElement.style.setProperty('--light-opacity', state.lightOpacity);
+        document.querySelector('.shade-main').style.fill = state.shadeColor;
+        document.querySelector('.shade-inner').style.fill = state.bulbColor;
+        document.querySelector('.login-btn').style.background = state.btnBg;
+        document.querySelector('.login-btn').style.color = state.btnText;
+        document.querySelector('.light-cone').style.opacity = state.lightOpacity;
+        parent.streamlit.setComponentValue({lamp_state: currentLampState});
     });
-})();
-</script>
-""", unsafe_allow_html=True)
 
-    # Layout: narrow outer cols to center card
-    _, center_col, _ = st.columns([0.5, 3, 0.5])
-
-    with center_col:
-        # Left panel (lamp illustration) + right panel (form) via sub-columns
-        lamp_col, form_col = st.columns([1, 1])
-
-        with lamp_col:
-            st.markdown("""
-            <div style="background:linear-gradient(170deg,#fff3cd 0%,#ffe8a0 50%,#ffd166 100%);
-                 border-radius:28px 0 0 28px;padding:2.5rem 1.5rem;min-height:460px;
-                 display:flex;flex-direction:column;align-items:center;justify-content:center;
-                 position:relative;overflow:hidden;animation:cardPop 0.6s cubic-bezier(0.34,1.56,0.64,1) both;">
-
-              <!-- Radial glow bg -->
-              <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 32%,rgba(255,255,180,0.65),transparent 70%);pointer-events:none;"></div>
-
-              <!-- Lamp SVG -->
-              <div style="position:relative;z-index:2;animation:lampFloat 4s ease-in-out infinite;">
-                <svg width="130" height="180" viewBox="0 0 130 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <!-- Lamp shade -->
-                  <ellipse cx="65" cy="48" rx="52" ry="12" fill="#f9a825" opacity="0.25"/>
-                  <path d="M18 50 Q30 20 65 14 Q100 20 112 50 Q100 80 65 82 Q30 80 18 50Z" fill="#ffd54f"/>
-                  <path d="M22 50 Q33 24 65 18 Q97 24 108 50 Q97 76 65 78 Q33 76 22 50Z" fill="#ffe082"/>
-                  <!-- Shade rim -->
-                  <ellipse cx="65" cy="80" rx="43" ry="9" fill="#f9a825" opacity="0.6"/>
-                  <ellipse cx="65" cy="80" rx="43" ry="9" fill="none" stroke="#e07b00" stroke-width="1.5"/>
-                  <!-- Inner light glow -->
-                  <ellipse cx="65" cy="50" rx="28" ry="22" fill="#fff9c4" opacity="0.7"/>
-                  <!-- Bulb -->
-                  <circle cx="65" cy="88" r="11" fill="#fff9c4" stroke="#f9a825" stroke-width="2"/>
-                  <circle cx="65" cy="88" r="7" fill="#fffde7"/>
-                  <!-- Pole -->
-                  <rect x="61" y="98" width="8" height="52" rx="4" fill="#a0826d"/>
-                  <!-- Base disc -->
-                  <ellipse cx="65" cy="152" rx="26" ry="7" fill="#8d6e63"/>
-                  <ellipse cx="65" cy="150" rx="22" ry="5" fill="#a0826d"/>
-                  <!-- Light rays -->
-                  <line x1="65" y1="82" x2="20" y2="112" stroke="#ffe082" stroke-width="1.5" opacity="0.5" stroke-dasharray="3 4"/>
-                  <line x1="65" y1="82" x2="110" y2="112" stroke="#ffe082" stroke-width="1.5" opacity="0.5" stroke-dasharray="3 4"/>
-                  <line x1="65" y1="82" x2="65" y2="125" stroke="#ffe082" stroke-width="1.5" opacity="0.4" stroke-dasharray="3 4"/>
-                  <!-- Stars -->
-                  <text x="30" y="36" font-size="14" fill="#f9a825" opacity="0.9">✦</text>
-                  <text x="92" y="30" font-size="11" fill="#ffcc02" opacity="0.8">✦</text>
-                  <text x="15" y="75" font-size="9"  fill="#f9a825" opacity="0.6">✦</text>
-                  <text x="108" y="70" font-size="10" fill="#ffcc02" opacity="0.7">✦</text>
-                </svg>
-              </div>
-
-              <!-- Glow puddle -->
-              <div style="width:110px;height:20px;background:radial-gradient(ellipse,rgba(255,200,50,0.5),transparent 70%);
-                   border-radius:50%;margin:-6px auto 0;animation:glowPulse 2.5s ease-in-out infinite;position:relative;z-index:2;"></div>
-
-              <!-- Tagline -->
-              <p style="font-family:'Quicksand',sans-serif;font-size:0.85rem;font-weight:700;color:#a0742a;
-                   text-align:center;margin-top:1.4rem;z-index:2;position:relative;line-height:1.5;">
-                Bright ideas<br>start here ✨
-              </p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with form_col:
-            st.markdown("""
-            <div style="background:rgba(255,255,255,0.88);border-radius:0 28px 28px 0;padding:2.8rem 2rem;
-                 min-height:460px;display:flex;flex-direction:column;justify-content:center;
-                 animation:cardPop 0.6s 0.1s cubic-bezier(0.34,1.56,0.64,1) both;backdrop-filter:blur(12px);">
-              <div style="font-family:'Nunito',sans-serif;font-size:1.75rem;font-weight:900;color:#3d2b1f;line-height:1.1;margin-bottom:0.3rem;">
-                Welcome Back
-              </div>
-              <div style="font-size:0.85rem;color:#9b7b6a;font-weight:600;margin-bottom:1.6rem;">
-                Sign in to your cozy corner.
-              </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-            if st.session_state.login_error:
-                st.markdown(f"""
-                <div class="form-error">⚠ &nbsp;{st.session_state.login_error}</div>
-                """, unsafe_allow_html=True)
-
-            username = st.text_input("Username", placeholder="Enter your username", key="login_user")
-            password = st.text_input("Password", placeholder="••••••••••••", type="password", key="login_pass")
-
-            if st.button("Login ✨", key="login_btn"):
-                if username in USERS and USERS[username] == password:
-                    st.session_state.authenticated = True
-                    st.session_state.login_error = ""
-                    st.rerun()
-                else:
-                    st.session_state.login_error = "Invalid credentials. Please try again."
-                    st.rerun()
-
-            st.markdown("""
-            <div style="text-align:center;margin-top:1.2rem;font-size:0.8rem;color:#9b7b6a;font-weight:600;">
-              No account? <span style="color:#e07b00;font-weight:800;">Sign up</span>
-            </div>
-            <div style="text-align:center;margin-top:0.8rem;font-size:0.72rem;color:#c4a882;">
-              Demo: <b style="color:#e07b00;">demo</b> / <b style="color:#e07b00;">demo123</b>
-            </div>
-            """, unsafe_allow_html=True)
-
+    // Form handling
+    document.getElementById('loginBtn').addEventListener('click', function() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const loginCard = document.getElementById('loginCard');
+        
+        if (username === 'demo' && password === 'demo123' || username === 'admin' && password === 'autoprice2024') {
+            loginCard.classList.add('success');
+            setTimeout(() => {
+                parent.streamlit.setComponentValue({authenticated: true, username: username});
+            }, 1500);
+        } else {
+            loginCard.classList.add('error');
+            setTimeout(() => loginCard.classList.remove('error'), 500);
+        }
+    });
+    </script>
+    """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
 #  GATE
